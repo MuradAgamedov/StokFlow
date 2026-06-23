@@ -1,0 +1,253 @@
+@model ModernWMC.Areas.Admin.ViewModels.FeaturesViewModel
+
+<style>
+    .icon-select-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .icon-preview {
+        width: 45px;
+        height: 45px;
+        border-radius: 8px;
+        background: rgba(13, 110, 253, 0.08);
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border: 1px solid rgba(13, 110, 253, 0.15);
+    }
+</style>
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Sistem Modulları Hissəsi (Features)</h4>
+                <p>Landing səhifəsindəki "Sistem Modulları" (Özəlliklər) bölməsinin statik başlıqlarını və dinamik kartlarını tənzimləyin.</p>
+            </div>
+            <div>
+                <a href="/#features" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye me-1"></i> Səhifəyə Baxış
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row g-4">
+            <!-- 1. Statik Başlıqlar Formu -->
+            <div class="col-lg-5 col-12">
+                <div class="cc h-100">
+                    <div class="cc-head">
+                        <h5 class="cc-title"><i class="bi bi-card-heading me-2 text-primary"></i>Statik Başlıqlar</h5>
+                    </div>
+                    <div class="cc-body p24">
+                        <form id="staticHeaderForm" method="POST" asp-area="Admin" asp-controller="Features" asp-action="SaveHeaders">
+                            <input type="hidden" asp-for="StaticHeaders.Id" />
+                            
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label" asp-for="StaticHeaders.SectionTag">Bölmə Etiketi (Tag) <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="StaticHeaders.SectionTag" required />
+                                    <span asp-validation-for="StaticHeaders.SectionTag" class="text-danger fs-7"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label" asp-for="StaticHeaders.SectionTitle">Əsas Başlıq <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="StaticHeaders.SectionTitle" required />
+                                    <span asp-validation-for="StaticHeaders.SectionTitle" class="text-danger fs-7"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label" asp-for="StaticHeaders.SectionDesc">Açıqlama Mətni <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" asp-for="StaticHeaders.SectionDesc" rows="4" required></textarea>
+                                    <span asp-validation-for="StaticHeaders.SectionDesc" class="text-danger fs-7"></span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-save me-1"></i> Saxla</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Dinamik Kartlar Formu (Dropdown Seçimli) -->
+            <div class="col-lg-7 col-12">
+                <div class="cc h-100">
+                    <div class="cc-head d-flex justify-content-between align-items-center">
+                        <h5 class="cc-title"><i class="bi bi-cpu me-2 text-primary"></i>Dinamik Modul Kartları</h5>
+                    </div>
+                    <div class="cc-body p24">
+                        <!-- Dropdown Selector -->
+                        <div class="mb-4 p-3 border rounded bg-body-tertiary">
+                            <label class="form-label fw-semibold" for="modSelector"><i class="bi bi-hand-index-thumb me-2"></i>Redaktə etmək üçün Modul seçin:</label>
+                            <select class="form-select form-select-lg" id="modSelector">
+                                @if (Model.SystemModulesDynamics != null)
+                                {
+                                    foreach (var mod in Model.SystemModulesDynamics)
+                                    {
+                                        <option value="@mod.Id">@mod.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <form id="dynamicCardForm" method="POST" asp-area="Admin" asp-controller="Features" asp-action="SaveCard">
+                            <input type="hidden" id="cardKey" asp-for="SelectedCard.Id" />
+                            
+                            <div class="row g-3">
+                                <!-- Card Title -->
+                                <div class="col-md-6 col-12">
+                                    <label class="form-label" asp-for="SelectedCard.Title">Kartın Başlığı <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="cardTitle" asp-for="SelectedCard.Title" required />
+                                    <span asp-validation-for="SelectedCard.Title" class="text-danger fs-7"></span>
+                                </div>
+
+                                <!-- Card Icon -->
+                                <div class="col-md-6 col-12">
+                                    <label class="form-label" asp-for="SelectedCard.IconClass">İkon Sinifi (Bootstrap Icon Class)</label>
+                                    <div class="icon-select-box">
+                                        <div class="icon-preview" id="iconPreview">
+                                            <i class="bi bi-boxes"></i>
+                                        </div>
+                                        <input type="text" class="form-control" id="cardIcon" asp-for="SelectedCard.IconClass" />
+                                    </div>
+                                    <span asp-validation-for="SelectedCard.IconClass" class="text-danger fs-7"></span>
+                                </div>
+
+                                <!-- Card Link URL -->
+                                <div class="col-md-8 col-12">
+                                    <label class="form-label" asp-for="SelectedCard.Url">Keçid Linki (URL)</label>
+                                    <input type="text" class="form-control" id="cardUrl" asp-for="SelectedCard.Url" />
+                                    <span asp-validation-for="SelectedCard.Url" class="text-danger fs-7"></span>
+                                </div>
+
+                                <!-- Card Order -->
+                                <div class="col-md-2 col-6">
+                                    <label class="form-label" asp-for="SelectedCard.Order">Sıralama</label>
+                                    <input type="number" class="form-control" id="cardOrder" asp-for="SelectedCard.Order" min="1" />
+                                    <span asp-validation-for="SelectedCard.Order" class="text-danger fs-7"></span>
+                                </div>
+
+                                <!-- Card Status -->
+                                <div class="col-md-2 col-6">
+                                    <label class="form-label" asp-for="SelectedCard.IsActive">Status</label>
+                                    <select class="form-select" id="cardStatus" asp-for="SelectedCard.IsActive">
+                                        <option value="true">Aktiv</option>
+                                        <option value="false">Deaktiv</option>
+                                    </select>
+                                    <span asp-validation-for="SelectedCard.IsActive" class="text-danger fs-7"></span>
+                                </div>
+
+                                <!-- Card Description -->
+                                <div class="col-12">
+                                    <label class="form-label" asp-for="SelectedCard.Description">Açıqlama / Təsvir <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="cardDesc" asp-for="SelectedCard.Description" rows="3" required></textarea>
+                                    <span asp-validation-for="SelectedCard.Description" class="text-danger fs-7"></span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Modul Kartını Saxla</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        // Dynamic loading of cards from DB
+        const modulesData = {
+            @if (Model.SystemModulesDynamics != null)
+            {
+                foreach (var mod in Model.SystemModulesDynamics)
+                {
+                    <text>
+                    "@mod.Id": {
+                        id: @mod.Id,
+                        title: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(mod.Title))",
+                        icon: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(mod.IconClass))",
+                        url: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(mod.Url))",
+                        order: @mod.Order,
+                        isActive: "@mod.IsActive.ToString().ToLower()",
+                        desc: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(mod.Description))"
+                    },
+                    </text>
+                }
+            }
+        };
+
+        const selector = document.getElementById('modSelector');
+        const cardKeyInput = document.getElementById('cardKey');
+        const cardTitleInput = document.getElementById('cardTitle');
+        const cardIconInput = document.getElementById('cardIcon');
+        const cardUrlInput = document.getElementById('cardUrl');
+        const cardOrderInput = document.getElementById('cardOrder');
+        const cardStatusSelect = document.getElementById('cardStatus');
+        const cardDescInput = document.getElementById('cardDesc');
+        const iconPreview = document.getElementById('iconPreview');
+
+        // Update fields when selecting another card
+        selector.addEventListener('change', function() {
+            const key = this.value;
+            const data = modulesData[key];
+            if (!data) return;
+
+            cardKeyInput.value = data.id;
+            cardTitleInput.value = data.title;
+            cardIconInput.value = data.icon;
+            cardUrlInput.value = data.url || "";
+            cardOrderInput.value = data.order;
+            cardStatusSelect.value = data.isActive === "true" ? "true" : "false";
+            cardDescInput.value = data.desc;
+
+            updateIconPreview(data.icon);
+        });
+
+        // Dynamic icon preview
+        cardIconInput.addEventListener('input', function() {
+            updateIconPreview(this.value);
+        });
+
+        function updateIconPreview(iconClass) {
+            // Support both fontawesome, boxicons and bootstrap icons (which has "bi bi-" prefix or just "bi-")
+            let cls = iconClass || "";
+            if (cls && !cls.includes(" ")) {
+                if (cls.startsWith("bi-")) {
+                    cls = "bi " + cls;
+                } else if (cls.startsWith("bx-")) {
+                    cls = "bx " + cls;
+                } else if (cls.startsWith("fa-")) {
+                    cls = "fa " + cls;
+                }
+            }
+            iconPreview.innerHTML = `<i class="${cls}"></i>`;
+        }
+
+        // Trigger change on load to fill initial inputs
+        if (selector.options.length > 0) {
+            selector.dispatchEvent(new Event('change'));
+        }
+    </script>
+}

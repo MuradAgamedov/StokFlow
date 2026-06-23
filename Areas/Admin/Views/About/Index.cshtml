@@ -1,0 +1,146 @@
+@model ModernWMC.Areas.Admin.ViewModels.AboutViewModel
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Haqqımızda Səhifəsi Məlumatları</h4>
+                <p>İctimai 'Haqqımızda' səhifəsində görünən bütün bölmələri və mətnləri buradan tənzimləyin.</p>
+            </div>
+            <div>
+                <a href="../about.html" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye me-1"></i> Səhifəyə Baxış
+                </a>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-info-circle me-2 text-primary"></i>Haqqımızda Məzmun Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-controller="About" asp-action="Index">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <!-- 1. Biz Kimik Hissəsi -->
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-1-circle me-2"></i>Biz Kimik? Bölməsi</h5>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <label asp-for="WhoAreWeTitle" class="form-label"></label>
+                            <input asp-for="WhoAreWeTitle" class="form-control" />
+                            <span asp-validation-for="WhoAreWeTitle" class="text-danger fs-7"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="WhoAreWeDescription" class="form-label"></label>
+                            <input asp-for="WhoAreWeDescription" class="form-control" />
+                            <span asp-validation-for="WhoAreWeDescription" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- 2. Missiyamız və Hədəfimiz Hissəsi -->
+                        <div class="col-12 mt-4">
+                            <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-2-circle me-2"></i>Missiyamız və Hədəfimiz</h5>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <label asp-for="OurMissionTitle" class="form-label"></label>
+                            <input asp-for="OurMissionTitle" class="form-control" />
+                            <span asp-validation-for="OurMissionTitle" class="text-danger fs-7"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="OurMissionDescription" class="form-label"></label>
+                            <textarea class="form-control" id="MissiyaText" asp-for="OurMissionDescription"></textarea>
+                            <span asp-validation-for="OurMissionDescription" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- 3. Niyə WMS Pro Hissəsi -->
+                        <div class="col-12 mt-4">
+                            <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-3-circle me-2"></i>Niyə WMS Pro? (Siyahı)</h5>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <label asp-for="WhoAreWeListTitle" class="form-label"></label>
+                            <input asp-for="WhoAreWeListTitle" class="form-control" />
+                            <span asp-validation-for="WhoAreWeListTitle" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Item 1 -->
+                        <div class="col-12 border p-3 rounded bg-body-tertiary">
+                            <h6>Məntəqə 1</h6>
+                            <div class="row g-2">
+                                <div class="col-md-4 col-12">
+                                    <label asp-for="WhoAreWeListFirstTextTitle" class="form-label fs-8"></label>
+                                    <input asp-for="WhoAreWeListFirstTextTitle" class="form-control" />
+                                    <span asp-validation-for="WhoAreWeListFirstTextTitle" class="text-danger fs-8 d-block"></span>
+                                </div>
+                                <div class="col-md-8 col-12">
+                                    <label asp-for="WhoAreWeListFirstText" class="form-label fs-8"></label>
+                                    <input asp-for="WhoAreWeListFirstText" class="form-control" />
+                                    <span asp-validation-for="WhoAreWeListFirstText" class="text-danger fs-8 d-block"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="col-12 border p-3 rounded bg-body-tertiary">
+                            <h6>Məntəqə 2</h6>
+                            <div class="row g-2">
+                                <div class="col-md-4 col-12">
+                                    <label asp-for="WhoAreWeListSecondTextTitle" class="form-label fs-8"></label>
+                                    <input asp-for="WhoAreWeListSecondTextTitle" class="form-control" />
+                                    <span asp-validation-for="WhoAreWeListSecondTextTitle" class="text-danger fs-8 d-block"></span>
+                                </div>
+                                <div class="col-md-8 col-12">
+                                    <label asp-for="WhoAreWeListSecondText" class="form-label fs-8"></label>
+                                    <input asp-for="WhoAreWeListSecondText" class="form-control" />
+                                    <span asp-validation-for="WhoAreWeListSecondText" class="text-danger fs-8 d-block"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="col-12 border p-3 rounded bg-body-tertiary">
+                            <h6>Məntəqə 3</h6>
+                            <div class="row g-2">
+                                <div class="col-md-4 col-12">
+                                    <label asp-for="WhoAreWeListThirdTextTitle" class="form-label fs-8"></label>
+                                    <input asp-for="WhoAreWeListThirdTextTitle" class="form-control" />
+                                    <span asp-validation-for="WhoAreWeListThirdTextTitle" class="text-danger fs-8 d-block"></span>
+                                </div>
+                                <div class="col-md-8 col-12">
+                                    <label asp-for="WhoAreWeListThirdText" class="form-label fs-8"></label>
+                                    <input asp-for="WhoAreWeListThirdText" class="form-control" />
+                                    <span asp-validation-for="WhoAreWeListThirdText" class="text-danger fs-8 d-block"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload();">İmtina Et</button>
+                        <button type="submit" class="btn btn-primary" ><i class="bi bi-save me-1"></i> Dəyişiklikləri Saxla</button>
+                    </div>
+
+                 
+                </form>
+                @if (@TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success mt-5">@TempData["SuccessMessage"]</div>
+                }
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts {
+    <!-- CKEditor CDN -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+
+    <!-- CKEditor Initialization -->
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#MissiyaText'), {
+                toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ]
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+}

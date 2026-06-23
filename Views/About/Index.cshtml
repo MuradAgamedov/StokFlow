@@ -1,0 +1,50 @@
+@model AboutViewModel
+
+@{
+    ViewData["Title"] = "B2B Təchizat və Anbar İdarəetmə ERP Sistemi";
+}
+
+@section PageCss {
+    <link href="~/css/about.css" rel="stylesheet">
+}
+
+<!-- HERO SECTION -->
+<section class="subpage-hero">
+    <div class="container text-center">
+        <h1 class="display-4 mb-3">@Model.About?.WhoAreWeTitle</h1>
+        <p class="text-secondary max-width-600 mx-auto">@Model.About?.WhoAreWeDescription</p>
+    </div>
+</section>
+
+<!-- CONTENT SECTION -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <h2 class="mb-4">@Model.About?.OurMissionTitle</h2>
+                <div class="text-secondary">
+                    @Html.Raw(Model.About?.OurMissionDescription)
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-4 rounded-4 bg-body-tertiary border">
+                    <h4 class="mb-3"><i class="bi bi-patch-check-fill text-primary me-2"></i>@Model.About?.WhoAreWeListTitle</h4>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0 fs-8">
+                        <li>
+                            <strong><i class="bi bi-check2-circle text-success me-1"></i> @Model.About?.WhoAreWeListFirstTextTitle:</strong>
+                            @Model.About?.WhoAreWeListFirstText
+                        </li>
+                        <li>
+                            <strong><i class="bi bi-check2-circle text-success me-1"></i> @Model.About?.WhoAreWeListSecondTextTitle:</strong>
+                            @Model.About?.WhoAreWeListSecondText
+                        </li>
+                        <li>
+                            <strong><i class="bi bi-check2-circle text-success me-1"></i> @Model.About?.WhoAreWeListThirdTextTitle:</strong>
+                            @Model.About?.WhoAreWeListThirdText
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

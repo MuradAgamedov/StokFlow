@@ -1,0 +1,53 @@
+@model ModernWMC.Areas.Admin.ViewModels.CategoryViewModel
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Yeni Kateqoriya Əlavə Et</h4>
+                <p>Sistemə yeni məhsul qrupu daxil edərək kateqoriya şəcərəsini genişləndirin.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Geri Qayıt
+                </a>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-tag me-2 text-primary"></i>Kateqoriya Məlumat Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Categories" asp-action="Create">
+                    <div class="row g-3">
+                        <!-- Kateqoriya Adi -->
+                        <div class="col-12 col-md-8">
+                            <label class="form-label" asp-for="Name">Kateqoriya Adı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" asp-for="Name" required placeholder="Məsələn: Elektronika" />
+                            <span asp-validation-for="Name" class="text-danger fs-7"></span>
+                        </div>
+                        <!-- Kod -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" asp-for="CategoryCode">Kateqoriya Kodu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" asp-for="CategoryCode" required placeholder="Məsələn: CAT-ELECT" />
+                            <span asp-validation-for="CategoryCode" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Acıqlama -->
+                        <div class="col-12">
+                            <label class="form-label" asp-for="Description">Açıqlama</label>
+                            <textarea class="form-control" asp-for="Description" rows="4" placeholder="Kateqoriya haqqında ətraflı məlumat daxil edin..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger fs-7"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Yadda Saxla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>

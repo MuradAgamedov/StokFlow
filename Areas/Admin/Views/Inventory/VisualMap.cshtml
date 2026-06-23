@@ -1,0 +1,169 @@
+@model IEnumerable<ModernWMC.Areas.Admin.ViewModels.InventoryViewModel>
+@{ ViewData["PageTitle"] = "Vizual Anbar Xəritəsi"; ViewData["PageSection"] = "Əməliyyatlar"; }
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Vizual Anbar Xəritəsi</h4>
+                <p>Məhsulların fiziki yerləşdiyi rəf grid sistemi və aktiv doluluq nisbətləri.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-list-task me-1"></i> Siyahı Görünüşü
+                </a>
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="AdjustStock" class="btn btn-sm btn-outline-warning">
+                    <i class="bi bi-sliders me-1"></i> Stok Düzəlişi (Adjustment)
+                </a>
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="Create" class="btn btn-sm btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Məhsul Əlavə Et
+                </a>
+            </div>
+        </div>
+
+        <!-- Anbar Seçimi Dropdown -->
+        <div class="filter-card mb-4 p-3 bg-body-secondary border rounded">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-bold" for="warehouseSelector">Aktiv Anbar</label>
+                    <select class="form-select form-select-sm wh-select" id="warehouseSelector" asp-items="ViewBag.WarehousesList" onchange="window.location.href='/Admin/Inventory/VisualMap?warehouseId=' + this.value">
+                    </select>
+                </div>
+                <div class="col-12 col-md-8 text-md-end text-muted fs-7">
+                    <span>Hazırda baxılır: <strong>@ViewBag.SelectedWarehouseName</strong></span>
+                </div>
+            </div>
+        </div>
+
+        @{
+            var groupedByZone = Model
+                .Where(i => !string.IsNullOrWhiteSpace(i.ShelfLocation))
+                .Select(i => {
+                    var parts = i.ShelfLocation!.Split('/');
+                    var zone = parts[0].Trim();
+                    var shelf = parts.Length > 1 ? parts[1].Trim() : "Ümumi";
+                    return new { Zone = zone, Shelf = shelf, Item = i };
+                })
+                .GroupBy(x => x.Zone)
+                .ToList();
+        }
+
+        <!-- MAP SECTION -->
+        <div class="row g-4">
+            <!-- Left: interactive grid map -->
+            <div class="col-12 col-lg-8">
+                <div class="cc">
+                    <div class="cc-head">
+                        <h5 class="cc-title"><i class="bi bi-bounding-box-circles me-2 text-primary"></i>Rəf Şəbəkəsi — @ViewBag.SelectedWarehouseName</h5>
+                        <span class="fs-8 text-muted">Aktiv rəfin üzərinə klikləyərək məlumatları göstərin</span>
+                    </div>
+                    <div class="cc-body p20">
+                        @if (groupedByZone.Any())
+                        {
+                            foreach (var zoneGroup in groupedByZone)
+                            {
+                                <h6 class="fw-bold mb-1 fs-7 mt-3">@zoneGroup.Key</h6>
+                                <div class="wh-grid mb-4 border rounded bg-body-tertiary">
+                                    @foreach (var x in zoneGroup)
+                                    {
+                                        var cellStatusClass = "wh-cell";
+                                        var badgeClass = "bg-success";
+                                        var statusLabel = "Dolu";
+
+                                        if (x.Item.Quantity == 0)
+                                        {
+                                            cellStatusClass = "wh-cell text-muted opacity-50";
+                                            badgeClass = "bg-secondary";
+                                            statusLabel = "Boş";
+                                        }
+                                        else if (x.Item.Quantity <= x.Item.CriticalLimit)
+                                        {
+                                            badgeClass = "bg-danger";
+                                            statusLabel = "Kritik";
+                                        }
+                                        else if (x.Item.Quantity <= x.Item.CriticalLimit * 1.5)
+                                        {
+                                            badgeClass = "bg-warning text-dark";
+                                            statusLabel = "Azalır";
+                                        }
+
+                                        <div class="@cellStatusClass" onclick="selectWarehouseCell(this, '@Html.Raw(x.Zone)', '@Html.Raw(x.Shelf)', '@Html.Raw(x.Item.SKU)', '@x.Item.Quantity', '@Html.Raw(x.Item.Name)', '@Html.Raw(x.Item.MeasureUnitCode)')">
+                                            <div class="wh-cell-title">@x.Shelf</div>
+                                            <span class="badge @badgeClass wh-cell-status">@statusLabel (@x.Item.Quantity)</span>
+                                        </div>
+                                    }
+                                    
+                                    <!-- Aesthetical empty cells to simulate real warehouse -->
+                                    <div class="wh-cell text-muted opacity-50">
+                                        <div class="wh-cell-title">Boş Rəf</div>
+                                        <span class="wh-cell-status text-muted">Boş</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-info-square fs-1 d-block mb-3"></i>
+                                Bu anbarda rəf lokasiyası təyin olunmuş heç bir məhsul tapılmadı.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: selected cell info details -->
+            <div class="col-12 col-lg-4">
+                <div class="cc">
+                    <div class="cc-head animate-fade">
+                        <h5 class="cc-title" id="cellDetailTitle">Məlumat Paneli</h5>
+                    </div>
+                    <div class="cc-body p20" id="cellDetailBody">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-arrow-left d-block fs-2 mb-2"></i>
+                            Məlumatları görmək üçün sol tərəfdən aktiv rəf seçin.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        function selectWarehouseCell(el, zone, shelf, sku, quantity, productName, measureUnitCode) {
+            // Remove selected class from all cells
+            document.querySelectorAll('.wh-cell').forEach(c => c.classList.remove('selected'));
+            // Add selected class to clicked cell
+            el.classList.add('selected');
+
+            // Update title
+            document.getElementById('cellDetailTitle').innerText = zone + ' — ' + shelf;
+
+            // Update body
+            const body = document.getElementById('cellDetailBody');
+            body.innerHTML = `
+                <div class="p-3 border rounded bg-body-tertiary mb-3 shadow-xs">
+                    <span class="sku d-inline-block mb-2">${sku}</span>
+                    <div class="fw-bold fs-6 mb-1">${productName}</div>
+                    <div class="fs-7 text-muted">Mövcud Stok: <strong class="${quantity <= 5 ? 'text-danger' : 'text-success'}">${quantity} ${measureUnitCode}</strong></div>
+                </div>
+                <div class="fs-8 text-secondary">
+                    <i class="bi bi-info-circle me-1"></i> Bu lokasiyaya yeni məhsul yerləşdirmək və ya stok miqdarını tənzimləmək üçün <strong>Stok Düzəlişi</strong> bölməsindən istifadə edin.
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Automatically select the first occupied cell
+            const firstCell = document.querySelector('.wh-cell:not(.opacity-50)');
+            if (firstCell) {
+                firstCell.click();
+            }
+        });
+    </script>
+}

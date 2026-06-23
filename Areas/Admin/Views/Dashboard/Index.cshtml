@@ -1,0 +1,262 @@
+@model ModernWMC.Areas.Admin.ViewModels.DashboardViewModel
+@{ ViewData["PageTitle"] = "İdarə Paneli"; ViewData["PageSection"] = "Əsas"; }
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Sistemə Xoş Gəlmisiniz</h4>
+                <p>WMS Pro Anbar və Təchizat İdarəetmə Panelinin cari statusu və xülasəsi.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" type="button" onclick="window.location.reload();">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Yenilə
+                </button>
+            </div>
+        </div>
+
+        <!-- CRITICAL STOCK ALERT -->
+        @if (Model.CriticalItemsCount > 0)
+        {
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-xl-8">
+                    <div class="alert alert-danger d-flex align-items-center justify-content-between h-100 mb-0 shadow-sm border-0 alert-dismissible fade show" role="alert">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                <i class="bi bi-exclamation-octagon fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-danger">Kritik Stok Xəbərdarlığı!</strong>
+                                <span class="fs-7 text-secondary">
+                                    @string.Join(", ", Model.CriticalItems.Where(x => x.IsAtCritical).Select(x => x.Name).Take(3))
+                                    @if (Model.CriticalItemsCount > 3)
+                                    {
+                                        <span> və daha @(Model.CriticalItemsCount - 3) məhsul</span>
+                                    }
+                                    kritik limitdən aşağıdır!
+                                </span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4">
+                    <div class="card bg-primary-subtle border-0 h-100 shadow-sm">
+                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="bi bi-magic"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-primary fs-7">Avto-Sifariş Planlayıcı</strong>
+                                    <span class="fs-8 text-secondary">Kritik məhsullar üçün PO layihəsi hazırdır.</span>
+                                </div>
+                            </div>
+                            <a asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Create" class="btn btn-xs btn-primary">
+                                <i class="bi bi-file-earmark-plus me-1"></i> PO Yarat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- STAT CARDS -->
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-sm-6 col-xxl-3">
+                <div class="stat-card">
+                    <div class="stat-icon si-blue"><i class="bi bi-box-seam"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="stat-lbl">Ümumi Stok Miqdarı</div>
+                        <div class="stat-val">@Model.TotalStockQuantity.ToString("N0")</div>
+                        <div class="stat-trend text-muted">
+                            <i class="bi bi-boxes me-1"></i> @Model.TotalProductCount məhsul növü
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xxl-3">
+                <div class="stat-card">
+                    <div class="stat-icon si-red"><i class="bi bi-exclamation-triangle"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="stat-lbl">Kritik Həddəki Məhsullar</div>
+                        <div class="stat-val">@Model.CriticalItemsCount</div>
+                        <div class="stat-trend @(Model.CriticalItemsCount > 0 ? "trend-dn" : "trend-up")">
+                            @if (Model.CriticalItemsCount > 0)
+                            {
+                                <i class="bi bi-arrow-up-short"></i>
+                                <span>Diqqət tələb edir</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-check-circle me-1"></i>
+                                <span>Hər şey normaldır</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xxl-3">
+                <div class="stat-card">
+                    <div class="stat-icon si-orange"><i class="bi bi-clock-history"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="stat-lbl">Gözləyən Sifarişlər</div>
+                        <div class="stat-val">@Model.PendingOrdersCount</div>
+                        <div class="stat-trend text-muted">
+                            <i class="bi bi-cart-check me-1"></i> Satınalma & Sifarişlər
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xxl-3">
+                <div class="stat-card">
+                    <div class="stat-icon si-green"><i class="bi bi-truck"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="stat-lbl">Aktiv Transferlər</div>
+                        <div class="stat-val">@Model.ActiveTransfersCount</div>
+                        <div class="stat-trend @(Model.ActiveTransfersCount > 0 ? "trend-up" : "text-muted")">
+                            <i class="bi bi-arrow-left-right me-1"></i>
+                            @(Model.ActiveTransfersCount > 0 ? "Yoldadır" : "Aktiv transfer yoxdur")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="row g-4">
+            <!-- Son Yenilənmiş Məhsullar -->
+            <div class="col-12 col-lg-8">
+                <div class="cc">
+                    <div class="cc-head">
+                        <h5 class="cc-title">Son Stok Hərəkətləri</h5>
+                        <a asp-area="Admin" asp-controller="Inventory" asp-action="Index" class="btn btn-xs btn-outline-primary">Bütün Stok</a>
+                    </div>
+                    <div class="cc-body">
+                        <div class="table-responsive">
+                            <table class="table erp-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Tarix</th>
+                                        <th>Məhsul SKU / Adı</th>
+                                        <th>Anbar</th>
+                                        <th class="text-end">Mövcud Stok</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.RecentItems.Any())
+                                    {
+                                        foreach (var item in Model.RecentItems)
+                                        {
+                                            <tr>
+                                                <td class="text-muted fs-8">@item.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                                <td>
+                                                    <span class="sku d-block mb-1" style="width:fit-content;">@item.SKU</span>
+                                                    <strong>@item.Name</strong>
+                                                </td>
+                                                <td>@item.WarehouseName</td>
+                                                <td class="text-end fw-bold">@item.Quantity @item.MeasureUnitCode</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">Hərəkət məlumatı tapılmadı.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Panel -->
+            <div class="col-12 col-lg-4">
+                <!-- Kritik Stok Siyahısı -->
+                <div class="cc mb-4">
+                    <div class="cc-head">
+                        <h5 class="cc-title text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Kritik / Azalan Stok</h5>
+                        <span class="badge bg-danger">@Model.CriticalItems.Count Məhsul</span>
+                    </div>
+                    <div class="cc-body p20">
+                        @if (Model.CriticalItems.Any())
+                        {
+                            @foreach (var (item, idx) in Model.CriticalItems.Select((x, i) => (x, i)))
+                            {
+                                var isLast = idx == Model.CriticalItems.Count - 1;
+                                <div class="d-flex align-items-center justify-content-between @(isLast ? "" : "mb-3 pb-3 border-bottom border-secondary-subtle")">
+                                    <div>
+                                        <div class="fw-bold fs-7">@item.Name</div>
+                                        <span class="sku d-inline-block mt-1">@item.SKU</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="sbadge @(item.IsAtCritical ? "s-crit" : "s-warn")">
+                                            Stok: @item.Quantity @item.MeasureUnitCode
+                                        </span>
+                                        <div class="fs-8 text-muted mt-1">Limit: @item.CriticalLimit @item.MeasureUnitCode</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-check-circle-fill text-success fs-3 d-block mb-2"></i>
+                                Bütün məhsullar normaldır.
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Anbar Doluluq Nisbəti -->
+                <div class="cc">
+                    <div class="cc-head">
+                        <h5 class="cc-title"><i class="bi bi-pie-chart-fill me-2"></i>Anbar Doluluq Nisbəti</h5>
+                    </div>
+                    <div class="cc-body p20">
+                        @if (Model.WarehouseOccupancies.Any())
+                        {
+                            @foreach (var (wh, idx) in Model.WarehouseOccupancies.Select((x, i) => (x, i)))
+                            {
+                                var barColor = wh.Percentage >= 90 ? "bg-danger" : wh.Percentage >= 60 ? "bg-warning" : "bg-success";
+                                var isLast = idx == Model.WarehouseOccupancies.Count - 1;
+                                <div class="@(isLast ? "" : "mb-3")">
+                                    <div class="d-flex justify-content-between mb-1 fs-7">
+                                        <span>@wh.Name</span>
+                                        <span class="fw-bold">
+                                            @if (wh.Capacity.HasValue && wh.Capacity.Value > 0)
+                                            {
+                                                <span>@wh.TotalQuantity / @wh.Capacity (@wh.Percentage%)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@wh.TotalQuantity ədəd</span>
+                                            }
+                                        </span>
+                                    </div>
+                                    <div class="progress rounded-pill" style="height: 8px;">
+                                        <div class="progress-bar @barColor rounded-pill" role="progressbar"
+                                             style="width: @wh.Percentage%;"
+                                             aria-valuenow="@wh.Percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-3">Anbar məlumatı tapılmadı.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>

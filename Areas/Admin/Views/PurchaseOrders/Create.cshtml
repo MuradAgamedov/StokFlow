@@ -1,0 +1,212 @@
+@model ModernWMC.Areas.Admin.ViewModels.PurchaseOrderViewModel
+@using System.Text.Encodings.Web
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Yeni Satınalma Sifarişi (PO)</h4>
+                <p>Sistemə yeni təchizat müqaviləsi və ya tədarük sifarişi əlavə edin.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Geri Qayıt
+                </a>
+            </div>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> Zəhmət olmasa formdakı xətaları düzəldin.
+                <div asp-validation-summary="All" class="fs-7 mt-1"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-cart-plus me-2 text-primary"></i>Sifariş Qeydiyyat Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Create" id="poForm">
+                    <div class="row g-3 mb-4">
+                        <!-- Techizatci Firma -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" asp-for="SupplierId">Təchizatçı Firma <span class="text-danger">*</span></label>
+                            <select class="form-select" asp-for="SupplierId" asp-items="ViewBag.Suppliers" required>
+                                <option value="">Firma seçin...</option>
+                            </select>
+                            <span asp-validation-for="SupplierId" class="text-danger fs-7"></span>
+                        </div>
+                        <!-- Teslim Edilecek Anbar -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" asp-for="WarehouseId">Qəbul Anbarı <span class="text-danger">*</span></label>
+                            <select class="form-select" asp-for="WarehouseId" asp-items="ViewBag.Warehouses" required>
+                                <option value="">Anbar seçin...</option>
+                            </select>
+                            <span asp-validation-for="WarehouseId" class="text-danger fs-7"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Product Rows Label -->
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-list-task me-1"></i>Sifariş Məhsulları</h6>
+                        <button type="button" class="btn btn-xs btn-outline-primary" id="addPoRow">
+                            <i class="bi bi-plus-lg me-1"></i> Məhsul Sətri Əlavə Et
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Product Rows Container -->
+                    <div id="poContainer">
+                        <!-- Initial Row (idx: 0) -->
+                        <div class="prod-row mb-3" id="pr0">
+                            <div class="row g-2">
+                                <div class="col-md-5">
+                                    <label class="form-label text-muted fs-8 mb-1">Məhsul</label>
+                                    <select name="Items[0].InventoryId" class="form-select form-select-sm po-prod-select" required>
+                                        <option value="">Məhsul seçin...</option>
+                                        @foreach (var prod in ViewBag.ProductsList)
+                                        {
+                                            <option value="@prod.Id">@prod.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label text-muted fs-8 mb-1">Miqdar</label>
+                                    <input type="number" name="Items[0].Quantity" class="form-control form-control-sm po-qty" min="1" value="1" required />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label text-muted fs-8 mb-1">Vahid Qiymət (₼)</label>
+                                    <input type="number" name="Items[0].UnitPrice" class="form-control form-control-sm po-price" step="0.01" min="0.01" placeholder="0.00" required />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label text-muted fs-8 mb-1">Cəmi (₼)</label>
+                                    <input type="text" class="form-control form-control-sm po-total" readonly value="0.00" />
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-row-btn" onclick="removeRow(0)"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grand Total Section -->
+                    <div class="d-flex justify-content-end align-items-center mt-3 pt-3 border-top">
+                        <span class="fw-bold me-2 text-secondary">Sifarişin Yekun Cəmi:</span>
+                        <span class="fs-4 fw-extrabold text-primary" id="grandTotal">0.00 ₼</span>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i> Sifarişi Göndər</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        let rowCount = 0;
+
+        // Add row template
+        document.getElementById('addPoRow').addEventListener('click', function () {
+            rowCount++;
+            const container = document.getElementById('poContainer');
+            
+            // Build the row layout
+            const newRow = document.createElement('div');
+            newRow.className = 'prod-row mb-3';
+            newRow.id = `pr${rowCount}`;
+            
+            let optionsHtml = '<option value="">Məhsul seçin...</option>';
+            @foreach (var prod in ViewBag.ProductsList)
+            {
+                <text>optionsHtml += '<option value="@prod.Id">@JavaScriptEncoder.Default.Encode(prod.Name)</option>';</text>
+            }
+
+            newRow.innerHTML = `
+                <div class="row g-2">
+                    <div class="col-md-5">
+                        <label class="form-label text-muted fs-8 mb-1">Məhsul</label>
+                        <select name="Items[${rowCount}].InventoryId" class="form-select form-select-sm po-prod-select" required>
+                            \${optionsHtml}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted fs-8 mb-1">Miqdar</label>
+                        <input type="number" name="Items[${rowCount}].Quantity" class="form-control form-control-sm po-qty" min="1" value="1" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted fs-8 mb-1">Vahid Qiymət (₼)</label>
+                        <input type="number" name="Items[${rowCount}].UnitPrice" class="form-control form-control-sm po-price" step="0.01" min="0.01" placeholder="0.00" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted fs-8 mb-1">Cəmi (₼)</label>
+                        <input type="text" class="form-control form-control-sm po-total" readonly value="0.00" />
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-row-btn" onclick="removeRow(${rowCount})"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newRow);
+            updateRemoveButtons();
+            calculateGrandTotal();
+        });
+
+        // Remove row logic
+        window.removeRow = function (id) {
+            const row = document.getElementById(`pr${id}`);
+            if (row) {
+                row.remove();
+                calculateGrandTotal();
+                updateRemoveButtons();
+            }
+        };
+
+        // Disable remove button if only 1 row exists
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('.prod-row');
+            const removeBtns = document.querySelectorAll('.remove-row-btn');
+            if (rows.length <= 1) {
+                removeBtns.forEach(btn => btn.style.display = 'none');
+            } else {
+                removeBtns.forEach(btn => btn.style.display = 'block');
+            }
+        }
+
+        // Calculate totals dynamically using delegation
+        document.getElementById('poContainer').addEventListener('input', function (e) {
+            if (e.target.classList.contains('po-qty') || e.target.classList.contains('po-price')) {
+                const row = e.target.closest('.prod-row');
+                const qty = parseFloat(row.querySelector('.po-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.po-price').value) || 0;
+                const totalInput = row.querySelector('.po-total');
+                
+                const total = qty * price;
+                totalInput.value = total.toFixed(2);
+                calculateGrandTotal();
+            }
+        });
+
+        // Calculate Grand Total
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            const totals = document.querySelectorAll('.po-total');
+            totals.forEach(input => {
+                grandTotal += parseFloat(input.value) || 0;
+            });
+            document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('az-AZ', {
+                style: 'currency',
+                currency: 'AZN'
+            });
+        }
+
+        // Initialize state
+        updateRemoveButtons();
+    </script>
+}

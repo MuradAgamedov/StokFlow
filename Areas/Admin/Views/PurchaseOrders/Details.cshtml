@@ -1,0 +1,147 @@
+@model ModernWMC.Areas.Admin.ViewModels.PurchaseOrderViewModel
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Satınalma Sifariş Detalları</h4>
+                <p>Sifariş nömrəsi: <span class="fw-bold text-primary">@Model.OrderNumber</span></p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Siyahıya Qayıt
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Order Info Summary Card -->
+            <div class="col-12 col-lg-4">
+                <div class="cc h-100">
+                    <div class="cc-head">
+                        <h5 class="cc-title"><i class="bi bi-info-circle-fill me-2 text-primary"></i>Ümumi Məlumat</h5>
+                    </div>
+                    <div class="cc-body p24">
+                        <div class="mb-3 border-bottom pb-2">
+                            <label class="text-secondary small d-block">Sifariş Nömrəsi</label>
+                            <span class="fw-bold fs-6">@Model.OrderNumber</span>
+                        </div>
+                        <div class="mb-3 border-bottom pb-2">
+                            <label class="text-secondary small d-block">Təchizatçı Firma</label>
+                            <span class="fw-semibold">@Model.SupplierName</span>
+                        </div>
+                        <div class="mb-3 border-bottom pb-2">
+                            <label class="text-secondary small d-block">Qəbul Anbarı</label>
+                            <span class="fw-semibold">@Model.WarehouseName</span>
+                        </div>
+                        <div class="mb-3 border-bottom pb-2">
+                            <label class="text-secondary small d-block">Sifariş Tarixi</label>
+                            <span>@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+                        </div>
+                        <div class="mb-3 border-bottom pb-2">
+                            <label class="text-secondary small d-block">Status</label>
+                            @{
+                                var badgeClass = "s-warn";
+                                var statusText = "Təsdiq Gözləyir";
+
+                                if (Model.Status == "Ordered")
+                                {
+                                    badgeClass = "s-transit";
+                                    statusText = "Sifariş Verilib";
+                                }
+                                else if (Model.Status == "Completed")
+                                {
+                                    badgeClass = "s-done";
+                                    statusText = "Tamamlandı";
+                                }
+                            }
+                            <span class="sbadge @badgeClass mt-1">@statusText</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-secondary small d-block">Yekun Cəmi</label>
+                            <span class="fs-4 fw-extrabold text-primary">@Model.TotalAmount.ToString("C2", new System.Globalization.CultureInfo("az-Latn-AZ"))</span>
+                        </div>
+
+                        @if (Model.Status != "Completed")
+                        {
+                            <div class="mt-4 pt-3 border-top d-flex gap-2">
+                                @if (Model.Status == "PendingApproval")
+                                {
+                                    <form asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Approve" asp-route-id="@Model.Id" method="POST" class="w-100">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="bi bi-check-circle me-1"></i> Sifarişi Təsdiqlə
+                                        </button>
+                                    </form>
+                                }
+                                else if (Model.Status == "Ordered")
+                                {
+                                    <form asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Complete" asp-route-id="@Model.Id" method="POST" class="w-100">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-box-arrow-in-down me-1"></i> Məhsulları Qəbul Et
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordered Items List Card -->
+            <div class="col-12 col-lg-8">
+                <div class="cc h-100">
+                    <div class="cc-head">
+                        <h5 class="cc-title"><i class="bi bi-list-task me-2 text-primary"></i>Sifariş Məhsulları</h5>
+                        <span class="badge bg-secondary">@Model.Items.Count məhsul növü</span>
+                    </div>
+                    <div class="cc-body">
+                        <div class="table-responsive">
+                            <table class="table erp-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Məhsul Adı</th>
+                                        <th class="text-end">Miqdar</th>
+                                        <th class="text-end">Vahid Qiymət</th>
+                                        <th class="text-end">Cəmi Məbləğ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        var rowTotal = item.Quantity * item.UnitPrice;
+                                        <tr>
+                                            <td><span class="sku">@item.ProductSKU</span></td>
+                                            <td><strong>@item.ProductName</strong></td>
+                                            <td class="text-end">@item.Quantity @item.MeasureUnitCode</td>
+                                            <td class="text-end">@item.UnitPrice.ToString("C2", new System.Globalization.CultureInfo("az-Latn-AZ"))</td>
+                                            <td class="text-end fw-bold">@rowTotal.ToString("C2", new System.Globalization.CultureInfo("az-Latn-AZ"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold text-secondary">Yekun Məbləğ:</td>
+                                        <td class="text-end fw-extrabold text-primary fs-6">@Model.TotalAmount.ToString("C2", new System.Globalization.CultureInfo("az-Latn-AZ"))</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+@section Scripts {
+    <style>
+        .s-transit {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+        }
+    </style>
+}

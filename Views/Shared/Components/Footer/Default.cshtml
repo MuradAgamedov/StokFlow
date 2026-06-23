@@ -1,0 +1,46 @@
+@model ModernWMC.ViewModels.CtaViewModel
+
+@if (Model?.Cta != null)
+{
+    <!-- FOOTER CTA -->
+    <section class="py-5 my-4">
+        <div class="container">
+            <div class="p-5 rounded-4 text-center text-white" style="background: var(--primary-gradient); box-shadow: 0 10px 30px rgba(13, 110, 253, 0.25);">
+                <h2 class="mb-3 outfit-font fs-2">@Model.Cta.Title</h2>
+                <p class="mb-4 opacity-75 max-width-600 mx-auto fs-8">@Model.Cta.Description</p>
+                <a href="@Model.Cta.Url" class="btn btn-light cta-btn-secondary px-5">
+                    @Model.Cta.ButtonText <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- FOOTER -->
+<footer class="py-5 border-top bg-body-tertiary">
+    <div class="container">
+        <div class="row g-4 justify-content-between mb-4">
+            <div class="col-12 col-md-4 text-center text-md-start">
+                <h5 class="outfit-font text-primary mb-3"><i class="bi bi-box-seam-fill me-1"></i> WMS Pro</h5>
+                <p class="fs-8 text-secondary">Ağıllı anbar və təchizat idarəetmə platforması. Biznesiniz üçün rəqəmsal logistika həlləri.</p>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 fs-8">
+                    <a asp-controller="About" asp-action="Index" class="text-secondary text-decoration-none hover-primary @Html.IsActive("About", "Index")">Haqqımızda</a>
+                    <span class="text-muted">|</span>
+                    <a asp-controller="PrivacyPolicy" asp-action="Index" class="text-secondary text-decoration-none hover-primary @Html.IsActive("PrivacyPolicy", "Index")">Gizlilik Siyasəti</a>
+                    <span class="text-muted">|</span>
+                    <a asp-controller="TermsOfUse" asp-action="Index" class="text-secondary text-decoration-none hover-primary @Html.IsActive("TermsOfUse", "Index")">İstifadə Şərtləri</a>
+                    <span class="text-muted">|</span>
+                    <a asp-controller="Faq" asp-action="Index" class="text-secondary text-decoration-none hover-primary @Html.IsActive("Faq", "Index")">FAQ</a>
+                    <span class="text-muted">|</span>
+                    <a asp-controller="Contact" asp-action="Index" class="text-secondary text-decoration-none hover-primary @Html.IsActive("Contact", "Index")">Əlaqə</a>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4 opacity-10" />
+        <div class="text-center text-muted fs-8">
+            <p class="mb-0">&copy; 2026 WMS Pro. Bütün hüquqlar qorunur. Yaradıldı: Murad Agamedov</p>
+        </div>
+    </div>
+</footer>

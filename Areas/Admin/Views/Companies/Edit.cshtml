@@ -1,0 +1,81 @@
+@model ModernWMC.Areas.Admin.ViewModels.CompanyViewModel
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Firma Məlumatlarına Düzəliş Et</h4>
+                <p>Mövcud firmanın əlaqə məlumatlarını və digər detallarını redaktə edin.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="Companies" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Geri Qayıt
+                </a>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-pencil me-2 text-primary"></i>Firma Məlumat Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Companies" asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <!-- Şirkət Adı -->
+                        <div class="col-12 col-md-8">
+                            <label class="form-label" asp-for="Name">Şirkət Adı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" asp-for="Name" required />
+                            <span asp-validation-for="Name" class="text-danger fs-7"></span>
+                        </div>
+                        <!-- VÖEN -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" asp-for="Voen">VÖEN</label>
+                            <input type="text" class="form-control" asp-for="Voen" />
+                            <span asp-validation-for="Voen" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Məsul Şəxs -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" asp-for="ContactPerson">Məsul Şəxs (Əlaqələndirici)</label>
+                            <input type="text" class="form-control" asp-for="ContactPerson" />
+                            <span asp-validation-for="ContactPerson" class="text-danger fs-7"></span>
+                        </div>
+                        <!-- Telefon -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" asp-for="Phone">Telefon</label>
+                            <input type="text" class="form-control" asp-for="Phone" />
+                            <span asp-validation-for="Phone" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- E-poçt -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" asp-for="Email">E-poçt Ünvanı</label>
+                            <input type="email" class="form-control" asp-for="Email" />
+                            <span asp-validation-for="Email" class="text-danger fs-7"></span>
+                        </div>
+                        <!-- Status -->
+                        <div class="col-12 col-md-6 d-flex align-items-center">
+                            <div class="form-check form-switch pt-4">
+                                <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+                                <label class="form-check-label" asp-for="IsActive">Status Aktiv</label>
+                            </div>
+                        </div>
+
+                        <!-- Ünvan -->
+                        <div class="col-12">
+                            <label class="form-label" asp-for="Address">Fiziki Ünvan</label>
+                            <textarea class="form-control" asp-for="Address" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger fs-7"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="Companies" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Yadda Saxla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>

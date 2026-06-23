@@ -1,0 +1,61 @@
+@model ModernWMC.Areas.Admin.ViewModels.EmailViewModel
+
+<main id="main">
+    <div class="content">
+        
+        <div class="pg-header">
+            <div>
+                <h4>Yeni E-poçt Ünvanı Əlavə Et</h4>
+                <p>İctimai 'Əlaqə' səhifəsində görünəcək yeni bir e-poçt ünvanı daxil edin.</p>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-plus-circle me-2 text-primary"></i>E-poçt Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Emails" asp-action="Create">
+                    <div class="row g-3">
+                        <!-- Etiket / Növ -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Məs: Satış, Müştəri Xidmətləri, HR" />
+                            <span asp-validation-for="Title" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- E-poçt Ünvanı -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="Label" class="form-label"></label>
+                            <input asp-for="Label" class="form-control" type="email" placeholder="Məs: hr@wmspro.az" />
+                            <span asp-validation-for="Label" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Sıralama -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="Order" class="form-label"></label>
+                            <input asp-for="Order" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Order" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="IsActive" class="form-label"></label>
+                            <select asp-for="IsActive" class="form-select">
+                                <option value="true">Aktiv</option>
+                                <option value="false">Deaktiv</option>
+                            </select>
+                            <span asp-validation-for="IsActive" class="text-danger fs-7"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="Emails" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> E-poçtu Yarat</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</main>

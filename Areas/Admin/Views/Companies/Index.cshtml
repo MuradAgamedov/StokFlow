@@ -1,0 +1,133 @@
+@model IEnumerable<ModernWMC.Areas.Admin.ViewModels.CompanyViewModel>
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Firma və Partnyorların İdarə Edilməsi</h4>
+                <p>Sistemdə qeydiyyatdan keçmiş tədarükçü, alıcı və partnyor firmaların siyahısı və əlaqə məlumatları.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="Companies" asp-action="Create" class="btn btn-sm btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Firma
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Search Panel -->
+        <div class="filter-card mb-4">
+            <form method="GET" asp-area="Admin" asp-controller="Companies" asp-action="Index">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="searchQuery">Firma Axtar</label>
+                        <input type="text" class="form-control form-control-sm" id="searchQuery" name="search" value="@ViewData["CurrentFilter"]" placeholder="Şirkət adı, VÖEN, məsul şəxs və ya ünvan..." />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-funnel me-1"></i> Filtrlə
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Companies Table Card -->
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title">Qeydiyyatlı Firmalar</h5>
+                <span class="badge bg-secondary">Cəmi: @(Model?.Count() ?? 0) firma</span>
+            </div>
+            <div class="cc-body">
+                <div class="table-responsive">
+                    <table class="table erp-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>VÖEN</th>
+                                <th>Şirkət Adı</th>
+                                <th>Məsul Şəxs</th>
+                                <th>Əlaqə</th>
+                                <th>Ünvan</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Əməliyyatlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td><span class="sku">@(string.IsNullOrWhiteSpace(item.Voen) ? "—" : item.Voen)</span></td>
+                                        <td><strong>@item.Name</strong></td>
+                                        <td>@(string.IsNullOrWhiteSpace(item.ContactPerson) ? "—" : item.ContactPerson)</td>
+                                        <td>
+                                            @if (!string.IsNullOrWhiteSpace(item.Phone))
+                                            {
+                                                <div class="fs-7"><i class="bi bi-telephone me-1 text-muted"></i>@item.Phone</div>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(item.Email))
+                                            {
+                                                <div class="fs-8 text-secondary"><i class="bi bi-envelope me-1 text-muted"></i>@item.Email</div>
+                                            }
+                                            @if (string.IsNullOrWhiteSpace(item.Phone) && string.IsNullOrWhiteSpace(item.Email))
+                                            {
+                                                <span>—</span>
+                                            }
+                                        </td>
+                                        <td>@(string.IsNullOrWhiteSpace(item.Address) ? "—" : item.Address)</td>
+                                        <td class="text-center">
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="sbadge s-ok">Aktiv</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="sbadge s-err">Deaktiv</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-1">
+                                                <a asp-area="Admin" asp-controller="Companies" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-xs btn-outline-primary act-btn" title="Düzəliş et">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form asp-area="Admin" asp-controller="Companies" asp-action="Delete" asp-route-id="@item.Id" method="POST" class="d-inline" onsubmit="return confirm('Bu firmanı silmək istədiyinizə əminsiniz?')">
+                                                    <button type="submit" class="btn btn-xs btn-outline-danger act-btn" title="Sil">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">Sistemdə heç bir firma tapılmadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>

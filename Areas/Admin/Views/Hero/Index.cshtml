@@ -1,0 +1,124 @@
+@model ModernWMC.Areas.Admin.ViewModels.HeroViewModel
+
+<style>
+    .ck-editor__editable_inline {
+        min-height: 150px;
+    }
+    .ck.ck-editor {
+        color: #212529 !important;
+    }
+    .image-preview-box {
+        border: 2px dashed rgba(var(--bs-emphasis-color-rgb), 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        background: rgba(var(--bs-emphasis-color-rgb), 0.02);
+        position: relative;
+    }
+    .preview-img {
+        max-height: 200px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        margin-top: 15px;
+    }
+</style>
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Giriş (Hero) Hissəsi Məlumatları</h4>
+                <p>Landing səhifəsinin ilk açılış hissəsindəki (Hero) başlıq, alt-açıqlama, etiket və önizləmə şəklini tənzimləyin.</p>
+            </div>
+            <div>
+                <a href="/#hero" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye me-1"></i> Səhifəyə Baxış
+                </a>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-window-sidebar me-2 text-primary"></i>Giriş (Hero) Formu</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Hero" asp-action="Index" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                 
+                    <div class="row g-4">
+                        <!-- Label Field -->
+                        <div class="col-12">
+                            <label class="form-label" asp-for="Label">Etiket (Label) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" asp-for="Label" />
+                            <span asp-validation-for="Label" class="text-danger fs-7"></span>
+                            <div class="form-text">Hero başlığının yuxarısında kiçik etiket kimi görünür.</div>
+                        </div>
+
+                        <!-- Left Data (CKEditor Left Data) -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-primary" asp-for="Title"><i class="bi bi-layout-text-sidebar me-2"></i>Sol Məzmun Başlığı (CKEditor Left Data) <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="LeftData" asp-for="Title"></textarea>
+                            <span asp-validation-for="Title" class="text-danger fs-7"></span>
+                            <div class="form-text">Böyük başlıq mətni. HTML teqlərini və rəngli vurğuları (span teqləri ilə) dəstəkləyir.</div>
+                        </div>
+
+                        <!-- Subdescription Field -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-primary" asp-for="SubText"><i class="bi bi-text-paragraph me-2"></i>Alt Açıqlama (Subdescription) <span class="text-danger">*</span></label>
+                            <textarea class="form-control" asp-for="SubText" rows="3"></textarea>
+                            <span asp-validation-for="SubText" class="text-danger fs-7"></span>
+                            <div class="form-text">Başlığın altında görünən izahlı kiçik abzas.</div>
+                        </div>
+
+                        <!-- Image Preview Area -->
+                        <div class="col-12">
+                            <div class="image-preview-box">
+                                <span class="fs-8 text-secondary d-block mb-2"><i class="bi bi-image me-1"></i> Cari Giriş Hissəsi Şəkli:</span>
+                                
+                                <div class="d-flex justify-content-center align-items-center mb-3">
+                                    <input asp-for="ImageUrl" type="hidden" />
+
+                                    <div class="input-group" style="max-width: 450px;">
+                                        <input type="file" class="form-control" asp-for="Image" accept="image/*" />
+                                        <label class="input-group-text" asp-for="Image"><i class="bi bi-upload"></i></label>
+                                    </div>
+                                </div>
+                                <div class="form-text text-center mb-3">Giriş hissəsində sağ tərəfdə göstərilən ekran görüntüsü.</div>
+
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl) && Model.ImageUrl != "Image.jpg")
+                                {
+                                    <img src="~/uploads/@Model.ImageUrl" class="preview-img" alt="Hero Preview" onerror="this.src='/css/images/landing_hero_preview.jpg'" />
+                                }
+                                else
+                                {
+                                    <img src="/css/images/landing_hero_preview.jpg" class="preview-img" alt="Hero Preview" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload();">İmtina Et</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Dəyişiklikləri Saxla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <!-- CKEditor CDN -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+    
+    <!-- CKEditor Initialization -->
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#LeftData'), {
+                toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'undo', 'redo' ]
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+}

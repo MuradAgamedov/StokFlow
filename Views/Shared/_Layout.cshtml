@@ -1,0 +1,19 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="az" data-bs-theme="light">
+<head>
+    @await Html.PartialAsync("Partials/_Head")
+    @RenderSection("PageCss", required: false)
+</head>
+<body>
+
+    @await Component.InvokeAsync("Header")
+    @RenderBody()
+
+
+    @await Component.InvokeAsync("Footer")
+
+    @await Html.PartialAsync("Partials/_Foot")
+</body>
+</html>

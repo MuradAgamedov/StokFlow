@@ -1,0 +1,61 @@
+@model ModernWMC.Areas.Admin.ViewModels.FAQViewModel
+
+<main id="main">
+    <div class="content">
+        
+        <div class="pg-header">
+            <div>
+                <h4>Yeni FAQ Sualı Əlavə Et</h4>
+                <p>İctimai 'FAQ' səhifəsində görünəcək yeni sual və cavab daxil edin.</p>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-plus-circle me-2 text-primary"></i>FAQ Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Faq" asp-action="Create">
+                    <div class="row g-3">
+                        <!-- Sual -->
+                        <div class="col-md-9 col-12">
+                            <label asp-for="Question" class="form-label"></label>
+                            <input asp-for="Question" class="form-control" placeholder="Məs: Sistemdə ödəniş necə edilir?" />
+                            <span asp-validation-for="Question" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Sıralama -->
+                        <div class="col-md-3 col-12">
+                            <label asp-for="Order" class="form-label"></label>
+                            <input asp-for="Order" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Order" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Cavab -->
+                        <div class="col-12">
+                            <label asp-for="Answer" class="form-label"></label>
+                            <textarea asp-for="Answer" class="form-control" rows="4" placeholder="Cavabı bura daxil edin..."></textarea>
+                            <span asp-validation-for="Answer" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="IsActive" class="form-label"></label>
+                            <select asp-for="IsActive" class="form-select">
+                                <option value="true">Aktiv</option>
+                                <option value="false">Deaktiv</option>
+                            </select>
+                            <span asp-validation-for="IsActive" class="text-danger fs-7"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="Faq" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Sualı Yarat</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</main>

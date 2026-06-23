@@ -1,0 +1,79 @@
+@model ModernWMC.Areas.Admin.ViewModels.InventoryViewModel
+@{ ViewData["PageTitle"] = "Stok Düzəlişi (Adjustment)"; ViewData["PageSection"] = "Anbar & Stok"; }
+
+<main id="main">
+    <div class="content">
+        <div class="pg-header">
+            <div>
+                <h4>Stok Düzəlişi (Stock Adjustment)</h4>
+                <p>Məhsulların sayım fərqi, defekt, zədə və ya digər səbəblərdən stok miqdarlarını əllə tənzimləyin.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Geri Qayıt
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-sliders me-2 text-warning"></i>Düzəliş Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Inventory" asp-action="AdjustStock">
+                    <div class="row g-3">
+                        <!-- Məhsul Seçimi -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="AdjustProduct">Məhsul <span class="text-danger">*</span></label>
+                            <select class="form-select" id="AdjustProduct" name="productId" asp-items="ViewBag.Products" required>
+                                <option value="">Məhsul seçin...</option>
+                            </select>
+                        </div>
+
+                        <!-- Anbar Seçimi -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="AdjustWarehouse">Düzəliş Ediləcək Anbar <span class="text-danger">*</span></label>
+                            <select class="form-select" id="AdjustWarehouse" name="warehouseId" asp-items="ViewBag.Warehouses" required>
+                                <option value="">Anbar seçin...</option>
+                            </select>
+                        </div>
+
+                        <!-- Əməliyyat Tipi -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="AdjustType">Əməliyyat Tipi <span class="text-danger">*</span></label>
+                            <select class="form-select" id="AdjustType" name="type" required>
+                                <option value="Add" selected>Stok Artır (+)</option>
+                                <option value="Subtract">Stok Azalt (-)</option>
+                            </select>
+                        </div>
+
+                        <!-- Düzəliş Miqdarı -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="AdjustQty">Miqdar <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="AdjustQty" name="quantity" min="1" value="1" required />
+                        </div>
+
+                        <!-- Səbəb / Qeyd -->
+                        <div class="col-12">
+                            <label class="form-label" for="AdjustReason">Düzəlişin Səbəbi <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="AdjustReason" name="reason" rows="3" required placeholder="Düzəliş səbəbini ətraflı yazın (məsələn: Sayım fərqi, Hasarlanmış məhsul, Defekt və s.)..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="Inventory" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-warning text-dark fw-bold"><i class="bi bi-check-lg me-1"></i> Təsdiqlə</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,153 @@
+@model IEnumerable<ModernWMC.Areas.Admin.ViewModels.PurchaseOrderViewModel>
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Satınalma Sifarişləri (Purchase Orders)</h4>
+                <p>Təchizatçılara göndərilən sifarişlərin izlənilməsi və qəbulu.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Create" class="btn btn-sm btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Satınalma Sifarişi
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Search Panel -->
+        <div class="filter-card mb-4">
+            <form method="GET" asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Index">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="searchQuery">Sifariş Axtar</label>
+                        <input type="text" class="form-control form-control-sm" id="searchQuery" name="search" value="@ViewData["CurrentFilter"]" placeholder="Sifariş nömrəsi, təchizatçı və ya anbar adı..." />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-funnel me-1"></i> Filtrlə
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- PURCHASE ORDERS TABLE -->
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title">Satınalma Siyahısı</h5>
+                <span class="badge bg-secondary">Cəmi: @(Model?.Count() ?? 0) sifariş</span>
+            </div>
+            <div class="cc-body">
+                <div class="table-responsive">
+                    <table class="table erp-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Sifariş No</th>
+                                <th>Təchizatçı Firma</th>
+                                <th>Təhvil Anbarı</th>
+                                <th>Sifariş Tarixi</th>
+                                <th class="text-end">Yekun Məbləğ</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Əməliyyatlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    var badgeClass = "s-warn";
+                                    var statusText = "Təsdiq Gözləyir";
+
+                                    if (item.Status == "Ordered")
+                                    {
+                                        badgeClass = "s-transit";
+                                        statusText = "Sifariş Verilib";
+                                    }
+                                    else if (item.Status == "Completed")
+                                    {
+                                        badgeClass = "s-done";
+                                        statusText = "Tamamlandı";
+                                    }
+
+                                    <tr>
+                                        <td><span class="sku">@item.OrderNumber</span></td>
+                                        <td><strong>@item.SupplierName</strong></td>
+                                        <td>@item.WarehouseName</td>
+                                        <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td class="text-end fw-bold">@item.TotalAmount.ToString("C2", new System.Globalization.CultureInfo("az-Latn-AZ"))</td>
+                                        <td class="text-center"><span class="sbadge @badgeClass">@statusText</span></td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-1 align-items-center">
+                                                <a asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Details" asp-route-id="@item.Id" class="btn btn-xs btn-outline-info" title="Detallara Bax">
+                                                    <i class="bi bi-eye"></i> Detallar
+                                                </a>
+
+                                                @if (item.Status == "PendingApproval")
+                                                {
+                                                    <form asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Approve" asp-route-id="@item.Id" method="POST" class="d-inline">
+                                                        <button type="submit" class="btn btn-xs btn-success" title="Sifarişi Təsdiqlə">
+                                                            <i class="bi bi-check-circle me-1"></i> Təsdiqlə
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (item.Status == "Ordered")
+                                                {
+                                                    <form asp-area="Admin" asp-controller="PurchaseOrders" asp-action="Complete" asp-route-id="@item.Id" method="POST" class="d-inline">
+                                                        <button type="submit" class="btn btn-xs btn-primary" title="Məhsulları Qəbul Et (Anbara Daxil Et)">
+                                                            <i class="bi bi-box-arrow-in-down me-1"></i> Qəbul Et
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (item.Status == "Completed")
+                                                {
+                                                    <button class="btn btn-xs btn-secondary" disabled>
+                                                        <i class="bi bi-check-all"></i> Qəbul Edildi
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">Sistemdə heç bir satınalma sifarişi tapılmadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+@section Scripts {
+    <!-- Custom s-transit CSS fallbacks if missing -->
+    <style>
+        .s-transit {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+        }
+    </style>
+}

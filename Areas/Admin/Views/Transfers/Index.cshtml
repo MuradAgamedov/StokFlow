@@ -1,0 +1,146 @@
+@model IEnumerable<ModernWMC.Areas.Admin.ViewModels.TransferViewModel>
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Anbarlararası Transfer (Inter-warehouse Stock Transfers)</h4>
+                <p>Anbarlar və filiallar arasında mövcud stok məhsullarının transfer edilməsi.</p>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="Transfers" asp-action="Create" class="btn btn-sm btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Transfer
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Search Panel -->
+        <div class="filter-card mb-4">
+            <form method="GET" asp-area="Admin" asp-controller="Transfers" asp-action="Index">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="searchQuery">Transfer Axtar</label>
+                        <input type="text" class="form-control form-control-sm" id="searchQuery" name="search" value="@ViewData["CurrentFilter"]" placeholder="Transfer nömrəsi, çıxış və ya giriş anbarı..." />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-funnel me-1"></i> Filtrlə
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- TRANSFERS TABLE -->
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title">Transfer Siyahısı</h5>
+                <span class="badge bg-secondary">Cəmi: @(Model?.Count() ?? 0) transfer</span>
+            </div>
+            <div class="cc-body">
+                <div class="table-responsive">
+                    <table class="table erp-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Transfer No</th>
+                                <th>Mənbə Anbar (Çıxış)</th>
+                                <th>Hədəf Anbar (Giriş)</th>
+                                <th>Göndərilmə Tarixi</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Əməliyyatlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    var badgeClass = "s-transit";
+                                    var statusText = "Yoldadır";
+
+                                    if (item.Status == "Completed")
+                                    {
+                                        badgeClass = "s-done";
+                                        statusText = "Tamamlandı";
+                                    }
+
+                                    <tr>
+                                        <td><span class="sku">@item.TransferNumber</span></td>
+                                        <td><strong>@item.SourceWarehouseName</strong></td>
+                                        <td><strong>@item.DestinationWarehouseName</strong></td>
+                                        <td>@item.SendDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td class="text-center"><span class="sbadge @badgeClass">@statusText</span></td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-1 align-items-center">
+                                                <a asp-area="Admin" asp-controller="Transfers" asp-action="Details" asp-route-id="@item.Id" class="btn btn-xs btn-outline-info" title="Detallara Bax">
+                                                    <i class="bi bi-eye"></i> Detallar
+                                                </a>
+
+                                                @if (item.Status == "InTransit")
+                                                {
+                                                    <form asp-area="Admin" asp-controller="Transfers" asp-action="Complete" asp-route-id="@item.Id" method="POST" class="d-inline" onsubmit="return confirm('Məhsulların hədəf anbarında qəbulunu təsdiqləyirsiniz?');">
+                                                        <button type="submit" class="btn btn-xs btn-success" title="Təhvil Al">
+                                                            <i class="bi bi-box-arrow-in-down me-1"></i> Təhvil Al
+                                                        </button>
+                                                    </form>
+                                                    <form asp-area="Admin" asp-controller="Transfers" asp-action="Delete" asp-route-id="@item.Id" method="POST" class="d-inline" onsubmit="return confirm('Bu transferi silmək istədiyinizdən əminsiniz?');">
+                                                        <button type="submit" class="btn btn-xs btn-outline-danger" title="Sil">
+                                                            <i class="bi bi-trash"></i> Sil
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (item.Status == "Completed")
+                                                {
+                                                    <button class="btn btn-xs btn-secondary" disabled>
+                                                        <i class="bi bi-check-all"></i> Qəbul Edilib
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Sistemdə heç bir anbarlararası transfer tapılmadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+@section Scripts {
+    <style>
+        .s-transit {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+        }
+        .s-done {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+    </style>
+}

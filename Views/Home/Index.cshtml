@@ -1,0 +1,85 @@
+﻿@model HomeViewModel
+
+@{
+    ViewData["Title"] = "B2B Təchizat və Anbar İdarəetmə ERP Sistemi";
+}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-12 col-lg-6">
+                <span class="hero-badge">
+                    <i class="bi bi-shield-check"></i> @Model.Hero?.Label
+                </span>
+                <h1 class="hero-title">
+                    @Html.Raw(Model.Hero?.Title)
+                </h1>
+                <p class="hero-desc">
+                    @Model.Hero?.SubText
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="login.html" class="btn btn-primary cta-btn-primary text-white">
+                        <i class="bi bi-rocket-takeoff me-1"></i> İndi Başla
+                    </a>
+                    <a href="#features" class="btn btn-light cta-btn-secondary border">
+                        Ətraflı Öyrən <i class="bi bi-chevron-down ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <!-- Browser / UI Mockup -->
+                <div class="hero-preview">
+                    <div class="preview-header">
+                        <span class="preview-dot" style="background: #ff5f56;"></span>
+                        <span class="preview-dot" style="background: #ffbd2e;"></span>
+                        <span class="preview-dot" style="background: #27c93f;"></span>
+                        <span class="fs-9 text-muted ms-2 select-none">wms-pro-dashboard.az</span>
+                    </div>
+                    <img src="~/uploads/@Model.Hero.ImageUrl"  class="img-fluid w-100" alt="WMS Pro Dashboard Preview" style="display: block; max-height: 400px; object-fit: cover;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section id="features" class="py-5 my-4">
+    <div class="container text-center">
+        <span class="section-tag">@Model.SystemModulesStatic.Title</span>
+        <h2 class="section-title">@Model.SystemModulesStatic.Subtitle</h2>
+        <p class="section-desc">@Model.SystemModulesStatic.Description</p>
+
+        <div class="row g-4 text-start mt-2">
+            <!-- Card 1 -->
+            @foreach (var module in Model.SystemModulesDynamics)
+            {
+                <div class="col-12 col-md-4">
+                    <div class="feature-card">
+                        <div class="feat-icon-box">
+                            <i class="@module.IconClass"></i>
+                        </div>
+                        <h4>@module.Title</h4>
+                        <p class="text-secondary fs-8">@module.Description</p>
+                        <a href="@(string.IsNullOrEmpty(module.Url)? '#' : module.Url)" class="btn btn-link p-0 fs-8 fw-semibold text-decoration-none">Modula get <i class="bi bi-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- STATISTICS SECTION -->
+<section id="statistics" class="py-5 bg-body-tertiary">
+    <div class="container text-center py-4">
+        <div class="row g-4 justify-content-center">
+            @foreach (var statistic in Model.Statistics)
+            {
+                <div class="col-6 col-md-3">
+                    <h2 class="text-primary fs-1 fw-bold">@statistic.Title</h2>
+                    <p class="text-secondary fs-8 mb-0">@statistic.Description</p>
+                </div>
+            }
+            </div>
+        </div>
+    </section>

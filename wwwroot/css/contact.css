@@ -1,0 +1,101 @@
+﻿:root {
+    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    --hero-bg: radial-gradient(circle at top right, rgba(13, 110, 253, 0.08) 0%, rgba(255, 255, 255, 0) 50%);
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-bs-theme="dark"] {
+    --hero-bg: radial-gradient(circle at top right, rgba(13, 110, 253, 0.15) 0%, rgba(0, 0, 0, 0) 60%);
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+h1, h2, h3, h4, .outfit-font {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+}
+
+.landing-nav {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--bs-body-bg-rgb), 0.8);
+    border-bottom: 1px solid rgba(var(--bs-emphasis-color-rgb), 0.08);
+}
+
+.nav-logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.subpage-hero {
+    background: var(--hero-bg);
+    padding: 140px 0 60px 0;
+    border-bottom: 1px solid rgba(var(--bs-emphasis-color-rgb), 0.05);
+}
+
+.contact-card {
+    border: 1px solid rgba(var(--bs-emphasis-color-rgb), 0.08);
+    border-radius: 16px;
+    transition: var(--transition-smooth);
+    background: var(--bs-body-bg);
+    box-shadow: var(--card-shadow);
+}
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+        border-color: #0d6efd;
+    }
+
+.contact-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.map-container {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(var(--bs-emphasis-color-rgb), 0.08);
+    height: 350px;
+}
+
+.floating-theme-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1050;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: var(--transition-smooth);
+}
+
+    .floating-theme-toggle:hover {
+        transform: scale(1.1);
+    }

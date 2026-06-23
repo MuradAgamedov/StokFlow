@@ -1,0 +1,182 @@
+@model IEnumerable<ModernWMC.Areas.Admin.ViewModels.InventoryViewModel>
+
+<main id="main">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="pg-header">
+            <div>
+                <h4>Anbar və Stok İdarəetməsi</h4>
+                <p>Məhsulların siyahısı, partiya və lot takibi, son istifadə tarixləri və anbar rəf lokasiyaları.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="VisualMap" class="btn btn-sm btn-outline-primary shadow-sm">
+                    <i class="bi bi-bounding-box-circles me-1"></i> Vizual Anbar Xəritəsi
+                </a>
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="AdjustStock" class="btn btn-sm btn-outline-warning shadow-sm">
+                    <i class="bi bi-sliders me-1"></i> Stok Düzəlişi (Adjustment)
+                </a>
+                <a asp-area="Admin" asp-controller="Inventory" asp-action="Create" class="btn btn-sm btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Məhsul Əlavə Et
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Filtretme panel -->
+        <div class="filter-card mb-4">
+            <form method="GET" asp-area="Admin" asp-controller="Inventory" asp-action="Index">
+                <div class="row g-2 align-items-end">
+                    <!-- Məhsul axtarışı -->
+                    <div class="col-12 col-md-5">
+                        <label class="form-label" for="filterSearch">Məhsul Axtar</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-body border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control form-control-sm border-start-0 border-end-0" id="filterSearch" name="search" value="@ViewData["CurrentFilter"]" placeholder="Məhsul adı, SKU, partiya və ya rəf..." />
+                        </div>
+                    </div>
+
+                    <!-- Kateqoriya dropdown -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="filterCategory">Kateqoriya</label>
+                        <select class="form-select form-select-sm" id="filterCategory" name="categoryId" asp-items="ViewBag.CategoriesList">
+                            <option value="">Bütün Kateqoriyalar</option>
+                        </select>
+                    </div>
+
+                    <!-- "Axtar" düyməsi -->
+                    <div class="col-12 col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-funnel me-1"></i> Filtrlə
+                        </button>
+                        <a asp-area="Admin" asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-outline-secondary w-50" title="Sıfırla">
+                            Sıfırla
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title">Stokdakı Məhsulların Siyahısı</h5>
+                <span class="badge bg-secondary">Cəmi: @(Model?.Count() ?? 0) məhsul</span>
+            </div>
+            <div class="cc-body">
+                <div class="table-responsive">
+                    <table class="table erp-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Məhsul Adı</th>
+                                <th>Partiya (Lot No)</th>
+                                <th>Son İstifadə Tarixi</th>
+                                <th>Kateqoriya</th>
+                                <th>Anbar</th>
+                                <th>Rəf / Zona</th>
+                                <th class="text-end">Mövcud Stok</th>
+                                <th class="text-end">Kritik Limit</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Əməliyyatlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    var statusText = "Normal";
+                                    var badgeClass = "s-ok";
+                                    
+                                    if (item.ExpirationDate.HasValue && item.ExpirationDate.Value.Date < DateTime.UtcNow.Date)
+                                    {
+                                        statusText = "Müddət bitib";
+                                        badgeClass = "s-crit";
+                                    }
+                                    else if (item.Quantity == 0)
+                                    {
+                                        statusText = "Stokda yoxdur";
+                                        badgeClass = "s-err";
+                                    }
+                                    else if (item.Quantity <= item.CriticalLimit)
+                                    {
+                                        statusText = "Kritik";
+                                        badgeClass = "s-crit";
+                                    }
+                                    else if (item.Quantity <= item.CriticalLimit * 1.5)
+                                    {
+                                        statusText = "Azalır";
+                                        badgeClass = "s-warn";
+                                    }
+
+                                    var dateText = item.ExpirationDate?.ToString("dd.MM.yyyy") ?? "—";
+                                    var isExpired = item.ExpirationDate.HasValue && item.ExpirationDate.Value.Date < DateTime.UtcNow.Date;
+
+                                    <tr>
+                                        <td><span class="sku">@item.SKU</span></td>
+                                        <td><strong>@item.Name</strong></td>
+                                        <td><span class="text-monospace fs-7">@(string.IsNullOrWhiteSpace(item.LotNo) ? "—" : item.LotNo)</span></td>
+                                        <td>
+                                            @if (isExpired)
+                                            {
+                                                <span class="text-danger fw-bold">@dateText (Keçib)</span>
+                                            }
+                                            else if (item.ExpirationDate.HasValue && item.ExpirationDate.Value.Date <= DateTime.UtcNow.Date.AddDays(30))
+                                            {
+                                                <span class="text-warning fw-semibold">@dateText</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">@dateText</span>
+                                            }
+                                        </td>
+                                        <td>@item.CategoryName</td>
+                                        <td>@item.WarehouseName</td>
+                                        <td>@(string.IsNullOrWhiteSpace(item.ShelfLocation) ? "—" : item.ShelfLocation)</td>
+                                        <td class="text-end fw-bold @(item.Quantity <= item.CriticalLimit ? "text-danger" : "text-success")">
+                                            @item.Quantity @item.MeasureUnitCode
+                                        </td>
+                                        <td class="text-end text-muted">@item.CriticalLimit @item.MeasureUnitCode</td>
+                                        <td class="text-center"><span class="sbadge @badgeClass">@statusText</span></td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-1">
+                                                <a asp-area="Admin" asp-controller="Inventory" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-xs btn-outline-primary act-btn" title="Düzəliş et">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form asp-area="Admin" asp-controller="Inventory" asp-action="Delete" asp-route-id="@item.Id" method="POST" class="d-inline" onsubmit="return confirm('Bu məhsulu silməyə əminsiniz?')">
+                                                    <button type="submit" class="btn btn-xs btn-outline-danger act-btn" title="Sil">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="11" class="text-center text-muted py-4">Sistemdə heç bir stok məlumatı tapılmadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

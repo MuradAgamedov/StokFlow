@@ -1,0 +1,62 @@
+@model ModernWMC.Areas.Admin.ViewModels.PhoneViewModel
+
+<main id="main">
+    <div class="content">
+        
+        <div class="pg-header">
+            <div>
+                <h4>Telefon Nömrəsini Düzəliş Et</h4>
+                <p>İctimai 'Əlaqə' səhifəsində görünən telefon nömrəsini redaktə edin.</p>
+            </div>
+        </div>
+
+        <div class="cc">
+            <div class="cc-head">
+                <h5 class="cc-title"><i class="bi bi-pencil-square me-2 text-primary"></i>Telefon Forması</h5>
+            </div>
+            <div class="cc-body p24">
+                <form method="POST" asp-area="Admin" asp-controller="Telephones" asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <!-- Etiket / Növ -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Məs: Əsas Telefon, Mobil, Dəstək" />
+                            <span asp-validation-for="Title" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Telefon Nömrəsi -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="Label" class="form-label"></label>
+                            <input asp-for="Label" class="form-control" placeholder="Məs: +994 (12) 400-99-88" />
+                            <span asp-validation-for="Label" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Sıralama -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="Order" class="form-label"></label>
+                            <input asp-for="Order" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Order" class="text-danger fs-7"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-6 col-12">
+                            <label asp-for="IsActive" class="form-label"></label>
+                            <select asp-for="IsActive" class="form-select">
+                                <option value="true">Aktiv</option>
+                                <option value="false">Deaktiv</option>
+                            </select>
+                            <span asp-validation-for="IsActive" class="text-danger fs-7"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a asp-area="Admin" asp-controller="Telephones" asp-action="Index" class="btn btn-outline-secondary">İmtina Et</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Dəyişiklikləri Saxla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</main>

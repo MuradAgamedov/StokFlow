@@ -1,0 +1,100 @@
+@model ModernWMC.Areas.Admin.ViewModels.LoginViewModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LoginLayout.cshtml";
+}
+
+<h1>Login</h1>
+
+
+<div class="container-fluid p-0">
+    <div class="login-container">
+        <div class="row g-0 w-100">
+
+            <!-- Left Split Panel -->
+            <div class="col-lg-6 d-none d-lg-flex login-brand-panel justify-content-between">
+                <div>
+                    <a href="index.html" class="brand-logo">
+                        <i class="bi bi-box-seam-fill"></i> WMS Pro
+                    </a>
+                </div>
+                <div>
+                    <h2 class="brand-quote">"Müasir texnologiyalarla təchizat zəncirini və anbar loqistikasını tam idarə edin."</h2>
+                    <p class="text-white-50 fs-8">WMS Pro ERP rəflərin vizual yerləşməsindən tutmuş transfer sifarişlərinə qədər bütün əməliyyatlarınızı rəqəmsallaşdırır.</p>
+                </div>
+                <div>
+                    <span class="fs-9 text-white-50">&copy; 2026 WMS Pro. Bütün hüquqlar qorunur.</span>
+                </div>
+            </div>
+
+            <!-- Right Split Panel (Form) -->
+            <div class="col-12 col-lg-6 login-form-panel position-relative">
+
+                <!-- Theme Toggle Button -->
+                <div class="theme-toggle-corner">
+                    <button id="themeToggle" class="icon-btn" type="button" title="Rejimi Dəyiş">
+                        <i class="bi bi-moon-fill"></i>
+                    </button>
+                </div>
+
+                <div class="login-card-width">
+
+                    <!-- Mobile Brand Header (only visible on small devices) -->
+                    <div class="d-block d-lg-none text-center mb-4">
+                        <a href="index.html" class="brand-logo justify-content-center text-primary" style="margin-bottom: 0;">
+                            <i class="bi bi-box-seam-fill"></i> WMS Pro
+                        </a>
+                    </div>
+
+                    <!-- Form Title -->
+                    <h1 class="login-title">Sistemə Giriş</h1>
+                    <p class="login-subtitle">Davam etmək üçün sistem hesabınıza daxil olun.</p>
+
+                    <!-- Form -->
+                    <form asp-area="Admin" asp-controller="Login" asp-action="Index" method="post">
+
+                        <!-- Email Input -->
+                        <div class="mb-3">
+                            <label class="form-label fs-8 fw-semibold" asp-for="Email"></label>
+                            <div class="form-icon-group">
+                                <input type="email" asp-for="Email" class="form-control" placeholder="nümunə@wms.pro" value="admin@wms.pro" />
+                                <i class="bi bi-envelope"></i>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fs-8 fw-semibold mb-0" asp-for="Password"></label>
+                                <a href="#forgot" class="text-decoration-none fs-9 fw-semibold text-primary">Şifrəni unutmusunuz?</a>
+                            </div>
+                            <div class="form-icon-group">
+                                <input type="password" asp-for="Password" class="form-control" id="loginPass" placeholder="••••••••" value="12345678" />
+                                <i class="bi bi-lock"></i>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Remember Me Checkbox -->
+                        <div class="form-check mb-4">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label class="form-check-label fs-8 text-secondary select-none" asp-for="RememberMe"></label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-login-submit w-100 mb-3 text-white">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Giriş Et
+                        </button>
+
+                        <!-- Back to landing -->
+                        <a href="index.html" class="btn btn-outline-secondary w-100 fs-8 py-2">
+                            <i class="bi bi-arrow-left me-1"></i> Ana Səhifəyə Qayıt
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
