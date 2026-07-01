@@ -1,0 +1,73 @@
+<!-- Add Branch Modal (UI Only) -->
+<div class="modal fade" id="addBranchModal" tabindex="-1" aria-labelledby="addBranchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBranchModalLabel"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Yeni Branş Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newBranchForm" onsubmit="event.preventDefault();">
+                    <div class="mb-3">
+                        <label for="branchName" class="form-label fw-semibold">Branş Adı</label>
+                        <input type="text" class="form-control form-control-custom" id="branchName" placeholder="Örn. Göz Hastalıkları" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="branchDesc" class="form-label fw-semibold">Açıklama</label>
+                        <textarea class="form-control form-control-custom" id="branchDesc" rows="3" placeholder="Branş hakkında kısa açıklama..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="branchStatus" class="form-label fw-semibold">Durum</label>
+                        <select class="form-select form-control-custom" id="branchStatus">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Pasif">Pasif</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary btn-primary-custom rounded-3 px-4" data-bs-dismiss="modal">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- UI Interaction Scripts -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuToggle = document.getElementById("menu-toggle");
+        const body = document.body;
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        // Sidebar toggling for mobile layout
+        if (menuToggle) {
+            menuToggle.addEventListener("click", function (e) {
+                e.preventDefault();
+                body.classList.toggle("sidebar-toggled");
+            });
+        }
+
+        // Click overlay to close sidebar on mobile
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener("click", function () {
+                body.classList.remove("sidebar-toggled");
+            });
+        }
+
+        // Quick interaction for active state switching in sidebar list
+        const navLinks = document.querySelectorAll(".nav-link-custom");
+        navLinks.forEach(link => {
+            link.addEventListener("click", function () {
+                // Do not prevent exit link
+                if (this.classList.contains("text-danger")) return;
+
+                navLinks.forEach(item => item.classList.remove("active"));
+                this.classList.add("active");
+
+                // Close sidebar on mobile after clicking item
+                body.classList.remove("sidebar-toggled");
+            });
+        });
+    });
+</script>
